@@ -22,6 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('bookmarks', BookmarkController::class);
     Route::post('bookmarks/{bookmark}/archive', [BookmarkController::class, 'archive'])
         ->name('bookmarks.archive');
+    Route::get('search', [BookmarkController::class, 'search'])->name('bookmarks.search');
 
     // Collections
     Route::resource('collections', CollectionController::class);

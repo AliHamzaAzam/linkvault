@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\BookmarkCreated;
 use App\Models\Bookmark;
 use App\Models\Tag;
 use App\Models\User;
@@ -46,8 +47,7 @@ class BookmarkService
         $this->syncTags($user, $bookmark, $data['tags'] ?? []);
         $this->syncCollections($bookmark, $data['collection_ids'] ?? []);
 
-        // Event dispatch will be added in Phase 3
-        // event(new BookmarkCreated($bookmark));
+        event(new BookmarkCreated($bookmark));
 
         return $bookmark;
     }
@@ -75,6 +75,48 @@ class BookmarkService
     {
         $bookmark->update(['is_archived' => !$bookmark->is_archived]);
         return $bookmark;
+    }
+
+    /**
+     * Search bookmarks using full-text search.
+     * Uses PostgreSQL tsvector/ts_rank on PostgreSQL, falls back to LIKE on other databases.
+     *
+     * @param User $user
+     * @param string $query
+     * @return LengthAwarePaginator
+     */
+    public function search(User $user, string $query): LengthAwarePaginator
+    {
+        $driver = \DB::getDriverName();
+
+        if ($driver === 'pgsql') {
+            // PostgreSQL: Use full-text search with tsvector
+            return $user->bookmarks()
+                ->with(['tags', 'collections'])
+                ->whereRaw(
+                    'searchable @@ plainto_tsquery(?)',
+                    [$query]
+                )
+                ->orderByRaw(
+                    'ts_rank(searchable, plainto_tsquery(?)) DESC',
+                    [$query]
+                )
+                ->paginate(20);
+        }
+
+        // SQLite/MySQL: Use LIKE-based search
+        $searchTerm = '%' . $query . '%';
+
+        return $user->bookmarks()
+            ->with(['tags', 'collections'])
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', $searchTerm)
+                  ->orWhere('description', 'like', $searchTerm)
+                  ->orWhere('site_name', 'like', $searchTerm)
+                  ->orWhere('url', 'like', $searchTerm);
+            })
+            ->latest()
+            ->paginate(20);
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBookmarkRequest;
 use App\Models\Bookmark;
 use App\Services\BookmarkService;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class BookmarkController extends Controller
 {
@@ -88,5 +89,15 @@ class BookmarkController extends Controller
 
         return redirect()->back()
             ->with('success', "Bookmark {$status}.");
+    }
+
+    public function search(Request $request): View
+    {
+        $query = $request->input('q', '');
+        $bookmarks = empty($query)
+            ? collect()
+            : $this->bookmarkService->search($request->user(), $query);
+
+        return view('bookmarks.search', compact('bookmarks', 'query'));
     }
 }

@@ -12,8 +12,11 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('bookmarks.index')" :active="request()->routeIs('bookmarks.*')">
+                    <x-nav-link :href="route('bookmarks.index')" :active="request()->routeIs('bookmarks.index') || request()->routeIs('bookmarks.show') || request()->routeIs('bookmarks.create') || request()->routeIs('bookmarks.edit')">
                         Bookmarks
+                    </x-nav-link>
+                    <x-nav-link :href="route('bookmarks.search')" :active="request()->routeIs('bookmarks.search')">
+                        Search
                     </x-nav-link>
                     <x-nav-link :href="route('collections.index')" :active="request()->routeIs('collections.*')">
                         Collections
@@ -73,8 +76,11 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('bookmarks.index')" :active="request()->routeIs('bookmarks.*')">
+            <x-responsive-nav-link :href="route('bookmarks.index')" :active="request()->routeIs('bookmarks.index')">
                 Bookmarks
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('bookmarks.search')" :active="request()->routeIs('bookmarks.search')">
+                Search
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('collections.index')" :active="request()->routeIs('collections.*')">
                 Collections
