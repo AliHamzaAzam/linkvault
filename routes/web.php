@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,10 @@ Route::get('/', function () {
         ? redirect()->route('bookmarks.index')
         : view('welcome');
 });
+
+// Public Profile Routes (outside auth middleware)
+Route::get('/@{username}', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/@{username}/{slug}', [ProfileController::class, 'collection'])->name('profile.collection');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Profile
@@ -30,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Tags
     Route::get('tags', [TagController::class, 'index'])->name('tags.index');
     Route::delete('tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
+
+    // Import
+    Route::get('import', [ImportController::class, 'create'])->name('import.create');
+    Route::post('import', [ImportController::class, 'store'])->name('import.store');
 });
 
 require __DIR__.'/auth.php';

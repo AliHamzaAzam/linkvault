@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('tags.index')" :active="request()->routeIs('tags.*')">
                         Tags
                     </x-nav-link>
+                    <x-nav-link :href="route('import.create')" :active="request()->routeIs('import.*')">
+                        Import
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -87,6 +90,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tags.index')" :active="request()->routeIs('tags.*')">
                 Tags
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('import.create')" :active="request()->routeIs('import.*')">
+                Import
             </x-responsive-nav-link>
         </div>
 
