@@ -17,13 +17,9 @@ class Collection extends Model
         'slug',
         'description',
         'color',
-        'is_public',
         'position',
         'user_id',
-    ];
-
-    protected $casts = [
-        'is_public' => 'boolean',
+        'share_token',
     ];
 
     // Auto-generate slug from name
@@ -47,5 +43,42 @@ class Collection extends Model
             ->withPivot('position')
             ->withTimestamps()
             ->orderByPivot('position');
+    }
+
+    /**
+     * Generate a new share token for this collection.
+     */
+    public function generateShareToken(): string
+    {
+        $token = Str::random(32);
+        $this->update(['share_token' => $token]);
+        return $token;
+    }
+
+    /**
+     * Revoke the share token for this collection.
+     */
+    public function revokeShareToken(): void
+    {
+        $this->update(['share_token' => null]);
+    }
+
+    /**
+     * Check if this collection has an active share token.
+     */
+    public function isShared(): bool
+    {
+        return $this->share_token !== null;
+    }
+
+    /**
+     * Get the share URL for this collection.
+     */
+    public function getShareUrl(): ?string
+    {
+        if (!$this->share_token) {
+            return null;
+        }
+        return url("/share/{$this->share_token}");
     }
 }

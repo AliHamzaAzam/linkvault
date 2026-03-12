@@ -64,7 +64,6 @@ describe('Search Functionality', function () {
         Bookmark::factory()->create([
             'user_id' => $otherUser->id,
             'title' => 'Laravel Secret',
-            'is_public' => true,
         ]);
 
         Bookmark::factory()->create([

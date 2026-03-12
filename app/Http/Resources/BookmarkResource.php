@@ -22,7 +22,6 @@ class BookmarkResource extends JsonResource
             'favicon_url' => $this->favicon_url,
             'og_image_url' => $this->og_image_url,
             'site_name' => $this->site_name,
-            'is_public' => $this->is_public,
             'is_archived' => $this->is_archived,
             'meta_scraped_at' => $this->meta_scraped_at?->toIso8601String(),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

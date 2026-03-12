@@ -20,7 +20,6 @@ Route::prefix('v1')->group(function () {
                     'id' => auth()->id(),
                     'name' => auth()->user()->name,
                     'email' => auth()->user()->email,
-                    'username' => auth()->user()->username,
                 ],
             ]);
         });

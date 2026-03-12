@@ -40,9 +40,11 @@ class DemoSeeder extends Seeder
             'name' => $data['name'],
             'color' => $data['color'],
             'position' => $i,
-            'is_public' => $i < 2, // first two public
             'slug' => \Illuminate\Support\Str::slug($data['name']),
         ]));
+
+        // Add a share token to the first collection for demo
+        $collections->first()->generateShareToken();
 
         // Create 25 bookmarks with random tags and collections
         Bookmark::factory()

@@ -1,96 +1,54 @@
 <?php
 
-use App\Models\Bookmark;
-use App\Models\Collection;
 use App\Models\User;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
 });
 
-describe('Public Profiles', function () {
-    it('displays public bookmarks on profile', function () {
-        $publicBookmark = Bookmark::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => true,
-            'title' => 'Public Tutorial',
-        ]);
-
-        $response = $this->get("/@{$this->user->username}");
+describe('Profile Management', function () {
+    it('allows user to view their profile edit page', function () {
+        $response = $this->actingAs($this->user)->get('/profile');
 
         $response->assertStatus(200);
-        $response->assertViewHas('bookmarks', function ($bookmarks) use ($publicBookmark) {
-            return $bookmarks->contains($publicBookmark);
-        });
+        $response->assertViewHas('user');
     });
 
-    it('hides private bookmarks on profile', function () {
-        Bookmark::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => false,
-            'title' => 'Private Secret',
+    it('allows user to update their profile information', function () {
+        $response = $this->actingAs($this->user)->patch('/profile', [
+            'name' => 'Updated Name',
+            'email' => 'newemail@example.com',
         ]);
 
-        $response = $this->get("/@{$this->user->username}");
-
-        $response->assertStatus(200);
-        $response->assertViewHas('bookmarks', function ($bookmarks) {
-            return $bookmarks->count() === 0;
-        });
+        $response->assertRedirect('/profile');
+        $response->assertSessionHas('status', 'profile-updated');
+        
+        $this->user->refresh();
+        expect($this->user->name)->toBe('Updated Name');
+        expect($this->user->email)->toBe('newemail@example.com');
     });
 
-    it('returns 404 for non-existent username', function () {
-        $response = $this->get('/@nonexistent-user-12345');
+    it('requires password confirmation to delete account', function () {
+        $response = $this->actingAs($this->user)->delete('/profile', [
+            'password' => 'wrong-password',
+        ]);
 
-        $response->assertStatus(404);
+        $response->assertSessionHasErrors('password', errorBag: 'userDeletion');
+        $this->assertDatabaseHas('users', ['id' => $this->user->id]);
     });
 
-    it('displays public collection page', function () {
-        $collection = Collection::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => true,
-            'slug' => 'tutorials',
+    it('allows user to delete their account with correct password', function () {
+        $response = $this->actingAs($this->user)->delete('/profile', [
+            'password' => 'password',
         ]);
 
-        $bookmark = Bookmark::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => true,
-        ]);
-        $bookmark->collections()->attach($collection->id);
-
-        $response = $this->get("/@{$this->user->username}/tutorials");
-
-        $response->assertStatus(200);
-        $response->assertViewHas('collection');
-        $response->assertViewHas('bookmarks');
+        $response->assertRedirect('/');
+        $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
     });
 
-    it('hides private bookmarks in public collection', function () {
-        $collection = Collection::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => true,
-            'slug' => 'mixed',
-        ]);
+    it('redirects guests to login', function () {
+        $response = $this->get('/profile');
 
-        $publicBookmark = Bookmark::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => true,
-            'title' => 'Public',
-        ]);
-        $publicBookmark->collections()->attach($collection->id);
-
-        $privateBookmark = Bookmark::factory()->create([
-            'user_id' => $this->user->id,
-            'is_public' => false,
-            'title' => 'Private',
-        ]);
-        $privateBookmark->collections()->attach($collection->id);
-
-        $response = $this->get("/@{$this->user->username}/mixed");
-
-        $response->assertStatus(200);
-        $response->assertViewHas('bookmarks', function ($bookmarks) {
-            return $bookmarks->count() === 1 && $bookmarks->first()->title === 'Public';
-        });
+        $response->assertRedirect('/login');
     });
 });

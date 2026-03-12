@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -25,7 +24,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'username',
     ];
 
     /**
@@ -49,19 +47,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Auto-generate username on user creation.
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (User $user) {
-            if (empty($user->username)) {
-                $baseUsername = Str::slug($user->name);
-                $user->username = $baseUsername . random_int(100, 999);
-            }
-        });
     }
 
     public function bookmarks(): HasMany

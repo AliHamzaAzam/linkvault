@@ -41,7 +41,6 @@ class BookmarkService
             'url' => $data['url'],
             'title' => $data['title'] ?? null,
             'description' => $data['description'] ?? null,
-            'is_public' => $data['is_public'] ?? false,
         ]);
 
         $this->syncTags($user, $bookmark, $data['tags'] ?? []);
@@ -57,7 +56,6 @@ class BookmarkService
         $bookmark->update([
             'title' => $data['title'] ?? $bookmark->title,
             'description' => $data['description'] ?? $bookmark->description,
-            'is_public' => $data['is_public'] ?? $bookmark->is_public,
         ]);
 
         if (isset($data['tags'])) {

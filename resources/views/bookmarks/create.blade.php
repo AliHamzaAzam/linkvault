@@ -67,19 +67,8 @@
                     </div>
                 @endif
 
-                {{-- Visibility --}}
-                <div class="border-t border-gray-100 pt-5 mt-2">
-                    <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors bg-white/50">
-                        <input type="hidden" name="is_public" value="0">
-                        <input type="checkbox" name="is_public" value="1"
-                               class="rounded border-gray-300 text-red-600 focus:ring-red-500 focus:ring-offset-0"
-                               {{ old('is_public') ? 'checked' : '' }}>
-                        <span class="text-sm font-medium text-gray-800">Make this bookmark public</span>
-                    </label>
-                </div>
-
                 {{-- Submit --}}
-                <div class="flex justify-end gap-3 pt-4">
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                     <a href="{{ route('bookmarks.index') }}" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Cancel</a>
                     <button type="submit" class="bg-gray-900 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200">
                         Save Bookmark

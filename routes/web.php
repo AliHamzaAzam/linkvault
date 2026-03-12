@@ -4,6 +4,7 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShareController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,9 +14,8 @@ Route::get('/', function () {
         : view('welcome');
 });
 
-// Public Profile Routes (outside auth middleware)
-Route::get('/@{username}', [ProfileController::class, 'show'])->name('profile.show');
-Route::get('/@{username}/{slug}', [ProfileController::class, 'collection'])->name('profile.collection');
+// Public share route (outside auth middleware)
+Route::get('share/{token}', [ShareController::class, 'show'])->name('share.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Profile
@@ -31,6 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Collections
     Route::resource('collections', CollectionController::class);
+    Route::post('collections/{collection}/share', [CollectionController::class, 'share'])
+        ->name('collections.share');
+    Route::delete('collections/{collection}/share', [CollectionController::class, 'unshare'])
+        ->name('collections.unshare');
 
     // Tags
     Route::get('tags', [TagController::class, 'index'])->name('tags.index');

@@ -62,4 +62,29 @@ class CollectionController extends Controller
         return redirect()->route('collections.index')
             ->with('success', 'Collection deleted.');
     }
+
+    /**
+     * Generate a share token for the collection.
+     */
+    public function share(Collection $collection)
+    {
+        $this->authorize('update', $collection);
+        $collection->generateShareToken();
+
+        return redirect()->back()
+            ->with('success', 'Share link created!')
+            ->with('share_url', $collection->getShareUrl());
+    }
+
+    /**
+     * Revoke the share token for the collection.
+     */
+    public function unshare(Collection $collection)
+    {
+        $this->authorize('update', $collection);
+        $collection->revokeShareToken();
+
+        return redirect()->back()
+            ->with('success', 'Share link revoked.');
+    }
 }

@@ -101,12 +101,6 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        @if($bookmark->is_public)
-                            <span class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Public</span>
-                        @else
-                            <span class="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">Private</span>
-                        @endif
-
                         @if($bookmark->is_archived)
                             <span class="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Archived</span>
                         @endif

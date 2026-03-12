@@ -18,14 +18,12 @@ class Bookmark extends Model
         'favicon_url',
         'og_image_url',
         'site_name',
-        'is_public',
         'is_archived',
         'meta_scraped_at',
         'user_id',
     ];
 
     protected $casts = [
-        'is_public' => 'boolean',
         'is_archived' => 'boolean',
         'meta_scraped_at' => 'datetime',
     ];

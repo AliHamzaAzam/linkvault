@@ -17,7 +17,6 @@ class BookmarkFactory extends Factory
             'favicon_url' => 'https://www.google.com/s2/favicons?domain=' . fake()->domainName(),
             'og_image_url' => fake()->imageUrl(1200, 630),
             'site_name' => fake()->company(),
-            'is_public' => fake()->boolean(30), // 30% public
             'is_archived' => false,
             'meta_scraped_at' => now(),
         ];
@@ -33,11 +32,6 @@ class BookmarkFactory extends Factory
             'site_name' => null,
             'meta_scraped_at' => null,
         ]);
-    }
-
-    public function public(): static
-    {
-        return $this->state(fn () => ['is_public' => true]);
     }
 
     public function archived(): static

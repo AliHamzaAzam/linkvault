@@ -25,7 +25,6 @@ class CollectionFactory extends Factory
             'name' => $collection['name'],
             'description' => fake()->sentence(),
             'color' => $collection['color'],
-            'is_public' => fake()->boolean(40),
             'position' => 0,
         ];
     }

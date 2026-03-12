@@ -23,7 +23,6 @@ class StoreBookmarkRequest extends FormRequest
             ],
             'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'is_public' => ['boolean'],
             'tags' => ['nullable', 'string'],           // comma-separated string
             'collection_ids' => ['nullable', 'array'],
             'collection_ids.*' => ['exists:collections,id'],

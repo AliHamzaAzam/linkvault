@@ -12,13 +12,11 @@ class CollectionPolicy
         return true;
     }
 
-    public function view(?User $user, Collection $collection): bool
+    // Collections are always private to the owner
+    // (share page bypasses policy via share_token lookup)
+    public function view(User $user, Collection $collection): bool
     {
-        if ($collection->user_id === $user?->id) {
-            return true;
-        }
-
-        return $collection->is_public;
+        return $user->id === $collection->user_id;
     }
 
     public function create(User $user): bool

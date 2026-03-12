@@ -32,7 +32,6 @@ class BookmarkImportService
                             'user_id' => $user->id, 
                             'name' => $folderName,
                             'color' => $this->generateRandomColor(),
-                            'is_public' => false,
                         ]
                     );
                 }
@@ -76,7 +75,6 @@ class BookmarkImportService
                 $bookmark = $user->bookmarks()->create([
                     'url' => $url,
                     'title' => $title,
-                    'is_public' => false,
                 ]);
 
                 if ($currentFolder) {

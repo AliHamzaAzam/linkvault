@@ -13,14 +13,10 @@ class BookmarkPolicy
         return true;
     }
 
-    // Owner always sees it. Others only if it's public.
-    public function view(?User $user, Bookmark $bookmark): bool
+    // Bookmarks are always private to the owner
+    public function view(User $user, Bookmark $bookmark): bool
     {
-        if ($bookmark->user_id === $user?->id) {
-            return true;
-        }
-
-        return $bookmark->is_public;
+        return $user->id === $bookmark->user_id;
     }
 
     public function create(User $user): bool

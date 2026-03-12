@@ -20,8 +20,9 @@ class CollectionResource extends JsonResource
             'slug' => $this->slug,
             'description' => $this->description,
             'color' => $this->color,
-            'is_public' => $this->is_public,
             'position' => $this->position,
+            'share_token' => $this->share_token,
+            'is_shared' => $this->share_token !== null,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];

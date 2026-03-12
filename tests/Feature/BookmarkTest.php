@@ -40,29 +40,15 @@ describe('Bookmark Management', function () {
         ]);
     });
 
-    it('prevents viewing other users private bookmarks', function () {
+    it('prevents viewing other users bookmarks', function () {
         $otherUser = User::factory()->create();
         $bookmark = Bookmark::factory()->create([
             'user_id' => $otherUser->id,
-            'is_public' => false,
         ]);
 
         $response = $this->get(route('bookmarks.show', $bookmark));
 
         $response->assertStatus(403);
-    });
-
-    it('allows viewing other users public bookmarks', function () {
-        $otherUser = User::factory()->create();
-        $bookmark = Bookmark::factory()->create([
-            'user_id' => $otherUser->id,
-            'is_public' => true,
-        ]);
-
-        $response = $this->get("/bookmarks/{$bookmark->id}");
-
-        $response->assertStatus(200);
-        $response->assertViewHas('bookmark');
     });
 
     it('toggles archive status', function () {
