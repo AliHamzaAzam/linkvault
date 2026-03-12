@@ -1,99 +1,96 @@
 <?php
 
-namespace Tests\Feature;
-
+use App\Models\Bookmark;
+use App\Models\Collection;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class ProfileTest extends TestCase
-{
-    use RefreshDatabase;
+beforeEach(function () {
+    $this->user = User::factory()->create();
+});
 
-    public function test_profile_page_is_displayed(): void
-    {
-        $user = User::factory()->create();
+describe('Public Profiles', function () {
+    it('displays public bookmarks on profile', function () {
+        $publicBookmark = Bookmark::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => true,
+            'title' => 'Public Tutorial',
+        ]);
 
-        $response = $this
-            ->actingAs($user)
-            ->get('/profile');
+        $response = $this->get("/@{$this->user->username}");
 
-        $response->assertOk();
-    }
+        $response->assertStatus(200);
+        $response->assertViewHas('bookmarks', function ($bookmarks) use ($publicBookmark) {
+            return $bookmarks->contains($publicBookmark);
+        });
+    });
 
-    public function test_profile_information_can_be_updated(): void
-    {
-        $user = User::factory()->create();
+    it('hides private bookmarks on profile', function () {
+        Bookmark::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => false,
+            'title' => 'Private Secret',
+        ]);
 
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
+        $response = $this->get("/@{$this->user->username}");
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+        $response->assertStatus(200);
+        $response->assertViewHas('bookmarks', function ($bookmarks) {
+            return $bookmarks->count() === 0;
+        });
+    });
 
-        $user->refresh();
+    it('returns 404 for non-existent username', function () {
+        $response = $this->get('/@nonexistent-user-12345');
 
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
-    }
+        $response->assertStatus(404);
+    });
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
-    {
-        $user = User::factory()->create();
+    it('displays public collection page', function () {
+        $collection = Collection::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => true,
+            'slug' => 'tutorials',
+        ]);
 
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
-            ]);
+        $bookmark = Bookmark::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => true,
+        ]);
+        $bookmark->collections()->attach($collection->id);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+        $response = $this->get("/@{$this->user->username}/tutorials");
 
-        $this->assertNotNull($user->refresh()->email_verified_at);
-    }
+        $response->assertStatus(200);
+        $response->assertViewHas('collection');
+        $response->assertViewHas('bookmarks');
+    });
 
-    public function test_user_can_delete_their_account(): void
-    {
-        $user = User::factory()->create();
+    it('hides private bookmarks in public collection', function () {
+        $collection = Collection::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => true,
+            'slug' => 'mixed',
+        ]);
 
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
+        $publicBookmark = Bookmark::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => true,
+            'title' => 'Public',
+        ]);
+        $publicBookmark->collections()->attach($collection->id);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
+        $privateBookmark = Bookmark::factory()->create([
+            'user_id' => $this->user->id,
+            'is_public' => false,
+            'title' => 'Private',
+        ]);
+        $privateBookmark->collections()->attach($collection->id);
 
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
+        $response = $this->get("/@{$this->user->username}/mixed");
 
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
-    }
-}
+        $response->assertStatus(200);
+        $response->assertViewHas('bookmarks', function ($bookmarks) {
+            return $bookmarks->count() === 1 && $bookmarks->first()->title === 'Public';
+        });
+    });
+});

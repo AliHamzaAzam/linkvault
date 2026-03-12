@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg font-bold"
-                 style="background-color: {{ $collection->color }};">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-gray-800 text-lg font-bold border-2"
+                 style="background-color: {{ $collection->color }}30; border-color: {{ $collection->color }};">
                 {{ strtoupper(substr($collection->name, 0, 1)) }}
             </div>
             <div>

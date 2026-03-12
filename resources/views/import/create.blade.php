@@ -98,7 +98,7 @@
 
                     <div class="flex items-center gap-4">
                         <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">
+                                class="bg-gray-800 text-white px-6 py-2.5 rounded-lg hover:bg-gray-900 font-medium">
                             Import Bookmarks
                         </button>
                         <a href="{{ route('bookmarks.index') }}" class="text-gray-600 hover:text-gray-800">

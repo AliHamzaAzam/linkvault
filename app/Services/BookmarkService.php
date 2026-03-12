@@ -121,10 +121,15 @@ class BookmarkService
 
     /**
      * Sync tags by name — creates new tags if they don't exist.
-     * Accepts an array of tag name strings.
+     * Accepts an array of tag name strings or a comma-separated string.
      */
-    private function syncTags(User $user, Bookmark $bookmark, array $tagNames): void
+    private function syncTags(User $user, Bookmark $bookmark, array|string $tagNames): void
     {
+        // Convert string to array if needed
+        if (is_string($tagNames)) {
+            $tagNames = array_filter(array_map('trim', explode(',', $tagNames)));
+        }
+        
         if (empty($tagNames)) {
             $bookmark->tags()->detach();
             return;

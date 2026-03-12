@@ -83,8 +83,8 @@
                     <div class="flex flex-wrap gap-1.5">
                         @foreach($bookmark->collections as $collection)
                             <a href="{{ route('collections.show', $collection) }}"
-                               class="text-xs px-2.5 py-1 rounded-full text-white"
-                               style="background-color: {{ $collection->color ?? '#6B7280' }}">
+                               class="text-xs px-2.5 py-1 rounded-full border"
+                               style="background-color: {{ $collection->color ?? '#6B7280' }}20; color: {{ $collection->color ?? '#6B7280' }}; border-color: {{ $collection->color ?? '#6B7280' }}40;">
                                 {{ $collection->name }}
                             </a>
                         @endforeach

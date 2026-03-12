@@ -105,7 +105,7 @@
 
                     <div class="flex gap-3">
                         <a href="{{ route('bookmarks.show', $bookmark) }}" class="px-4 py-2 text-gray-600 hover:text-gray-900">Cancel</a>
-                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                        <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900">
                             Save Changes
                         </button>
                     </div>

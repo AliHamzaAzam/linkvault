@@ -25,7 +25,7 @@
                         @endif
                     </div>
                     <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                            class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 font-medium">
                         Search
                     </button>
                 </form>
